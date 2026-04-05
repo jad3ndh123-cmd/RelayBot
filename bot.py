@@ -16,11 +16,12 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    # Only watch the source channel
     if message.channel.id != SOURCE_CHANNEL:
         return
 
-    # Only process webhook messages
-    if message.webhook_id is None:
+    # Only process messages that contain embeds (your webhook)
+    if not message.embeds:
         return
 
     text = ""
@@ -36,9 +37,9 @@ async def on_message(message):
 
     text = text.lower().strip()
 
-    # 🔥 YOUR KEYWORD LOGIC HERE
-    if "3ds" in text and "evan mum" in text:
+    # Send everything to output channel (no filtering)
+    if text:
         channel = client.get_channel(OUTPUT_CHANNEL)
-        await channel.send("@JadenDH 🚨 ALERT 🚨")
+        await channel.send(text)
 
 client.run(TOKEN)
