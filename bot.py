@@ -2,7 +2,7 @@ import discord
 import os
 
 TOKEN = os.getenv("TOKEN")
-SOURCE_CHANNEL = int(os.getenv("SOURCE_CHANNEL"))
+SOURCE_CHANNELS = [int(x) for x in os.getenv("SOURCE_CHANNELS").split(",")]
 OUTPUT_CHANNEL = int(os.getenv("OUTPUT_CHANNEL"))
 
 intents = discord.Intents.default()
@@ -16,11 +16,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Only watch the source channel
-    if message.channel.id != SOURCE_CHANNEL:
+    # Only watch selected source channels
+    if message.channel.id not in SOURCE_CHANNELS:
         return
 
-    # Only process messages that contain embeds (your webhook)
+    # Only process messages that contain embeds
     if not message.embeds:
         return
 
@@ -37,7 +37,7 @@ async def on_message(message):
 
     text = text.lower().strip()
 
-    # Send everything to output channel (no filtering)
+    # Send all extracted text to output channel
     if text:
         channel = client.get_channel(OUTPUT_CHANNEL)
         await channel.send(text)
