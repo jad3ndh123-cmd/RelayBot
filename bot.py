@@ -81,22 +81,22 @@ async def on_message(message):
             return
 
         # --- KEYWORD LOGIC ---
-        has_3ds = "3ds" in text
+        has_3ds = "yeezy" in text
         has_evan = "evan" in text
         has_jaden = "jaden" in text
 
         # --- ROUTING ---
         if has_3ds and has_evan:
             print("Matched EVAN alert")
-            requests.post(WEBHOOK_A, json={
-                "content": "@JadenDH 🚨 EVAN 3DS ALERT 🚨",
+            requests.post(WEBHOOK_B, json={
+                "content": "@JadenDH 🚨 3DS ALERT 🚨",
                 "username": "RelayBot"
             })
 
         if has_3ds and has_jaden:
             print("Matched JADEN alert")
-            requests.post(WEBHOOK_B, json={
-                "content": "@JadenDH 🚨 JADEN 3DS ALERT 🚨",
+            requests.post(WEBHOOK_A, json={
+                "content": "@JadenDH 🚨 3DS ALERT 🚨",
                 "username": "RelayBot"
             })
 
