@@ -1,3 +1,4 @@
+import requests
 import discord
 import os
 import time
@@ -69,7 +70,7 @@ async def on_message(message):
 
         if text:
             out = client.get_channel(OUTPUT_CHANNEL)
-            await out.send(text)
+            WEBHOOK_URL = os.getenv("OUTPUT_WEBHOOK")  requests.post(WEBHOOK_URL, json={     "content": text,     "username": "RelayBot" })
 
     # --- CALL TRIGGERS (ANY message in channel) ---
     channel_id = message.channel.id
