@@ -24,6 +24,7 @@ TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
 
 WEBHOOK_A = os.getenv("WEBHOOK_A")
 WEBHOOK_B = os.getenv("WEBHOOK_B")
+DEBUG_WEBHOOK = os.getenv("DEBUG_WEBHOOK")
 
 # --- TWILIO SETUP ---
 twilio_client = Client(TWILIO_SID, TWILIO_TOKEN)
@@ -79,6 +80,13 @@ async def on_message(message):
 
         if not text:
             return
+
+        # --- DEBUG OUTPUT (raw feed) ---
+        if DEBUG_WEBHOOK:
+        requests.post(DEBUG_WEBHOOK, json={
+            "content": text,
+            "username": "RelayBot Debug"
+        })
 
         # --- KEYWORD LOGIC ---
         has_3ds = "3ds" in text
