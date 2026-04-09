@@ -83,10 +83,10 @@ async def on_message(message):
 
         # --- DEBUG OUTPUT (raw feed) ---
         if DEBUG_WEBHOOK:
-        requests.post(DEBUG_WEBHOOK, json={
-            "content": text,
-            "username": "RelayBot Debug"
-        })
+            requests.post(DEBUG_WEBHOOK, json={
+                "content": text,
+                "username": "RelayBot Debug"
+            })
 
         # --- KEYWORD LOGIC ---
         has_3ds = "3ds" in text
