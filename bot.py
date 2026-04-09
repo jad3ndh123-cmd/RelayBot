@@ -1,14 +1,16 @@
-import requests
 import discord
 import os
 import time
+import requests
 from twilio.rest import Client
 
 # --- ENV VARIABLES ---
 TOKEN = os.getenv("TOKEN")
 
 SOURCE_CHANNELS = [int(x) for x in os.getenv("SOURCE_CHANNELS", "").split(",") if x]
-OUTPUT_CHANNEL = int(os.getenv("OUTPUT_CHANNEL"))
+
+CHANNEL_A = int(os.getenv("CHANNEL_A"))
+CHANNEL_B = int(os.getenv("CHANNEL_B"))
 
 CALL_CHANNEL_A = int(os.getenv("CALL_CHANNEL_A"))
 CALL_CHANNEL_B = int(os.getenv("CALL_CHANNEL_B"))
@@ -20,10 +22,13 @@ TWILIO_SID = os.getenv("TWILIO_SID")
 TWILIO_TOKEN = os.getenv("TWILIO_TOKEN")
 TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
 
+WEBHOOK_A = os.getenv("WEBHOOK_A")
+WEBHOOK_B = os.getenv("WEBHOOK_B")
+
 # --- TWILIO SETUP ---
 twilio_client = Client(TWILIO_SID, TWILIO_TOKEN)
 
-# --- COOLDOWN TRACKING ---
+# --- COOLDOWN ---
 last_call_times = {}
 
 def can_call(channel_id):
@@ -54,33 +59,48 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # --- RELAY (webhook embeds → text → YAG) ---
-    if message.channel.id in SOURCE_CHANNELS and message.embeds:
+    # --- PARSE WEBHOOK EMBEDS ---
+    if message.channel.id in SOURCE_CHANNELS:
         text = ""
 
-        for embed in message.embeds:
-            if embed.title:
-                text += embed.title + " "
-            if embed.description:
-                text += embed.description + " "
-            for field in embed.fields:
-                text += field.name + " " + field.value + " "
+        # grab embeds if present
+        if message.embeds:
+            for embed in message.embeds:
+                if embed.title:
+                    text += embed.title + " "
+                if embed.description:
+                    text += embed.description + " "
+                for field in embed.fields:
+                    text += field.name + " " + field.value + " "
+        else:
+            text = message.content
 
         text = text.lower().strip()
 
-        if text:
-            out = client.get_channel(OUTPUT_CHANNEL)
-            WEBHOOK_URL = os.getenv("OUTPUT_WEBHOOK")
+        if not text:
+            return
 
-            requests.post(
-            WEBHOOK_URL,
-            json={
-                "content": text,
+        # --- KEYWORD LOGIC ---
+        has_3ds = "3ds" in text
+        has_evan = "evan" in text
+        has_jaden = "jaden" in text
+
+        # --- ROUTING ---
+        if has_3ds and has_evan:
+            print("Matched EVAN alert")
+            requests.post(WEBHOOK_A, json={
+                "content": "@JadenDH 🚨 EVAN 3DS ALERT 🚨",
                 "username": "RelayBot"
-                }
-                )
+            })
 
-    # --- CALL TRIGGERS (ANY message in channel) ---
+        if has_3ds and has_jaden:
+            print("Matched JADEN alert")
+            requests.post(WEBHOOK_B, json={
+                "content": "@JadenDH 🚨 JADEN 3DS ALERT 🚨",
+                "username": "RelayBot"
+            })
+
+    # --- CALL LOGIC (UNCHANGED) ---
     channel_id = message.channel.id
 
     if channel_id == CALL_CHANNEL_A:
@@ -93,5 +113,4 @@ async def on_message(message):
             print("Calling Phone B")
             make_call(PHONE_B)
 
-# --- RUN BOT ---
 client.run(TOKEN)
