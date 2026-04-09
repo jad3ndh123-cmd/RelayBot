@@ -81,9 +81,9 @@ async def on_message(message):
             return
 
         # --- KEYWORD LOGIC ---
-        has_3ds = "yeezy" in text
+        has_3ds = "3ds" in text
         has_evan = "evan" in text
-        has_jaden = "test" in text
+        has_jaden = "jaden" in text
 
         # --- ROUTING ---
         if has_3ds and has_evan:
