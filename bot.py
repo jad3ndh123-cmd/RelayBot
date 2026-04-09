@@ -89,14 +89,14 @@ async def on_message(message):
         if has_3ds and has_evan:
             print("Matched EVAN alert")
             requests.post(WEBHOOK_B, json={
-                "content": "@GMTL 🚨 3DS ALERT 🚨",
+                "content": "<@409121609333604355> 🚨 3DS ALERT 🚨",
                 "username": "RelayBot"
             })
 
         if has_3ds and has_jaden:
             print("Matched JADEN alert")
             requests.post(WEBHOOK_A, json={
-                "content": "@JadenDH 🚨 3DS ALERT 🚨",
+                "content": "<@409826137645252609> 🚨 3DS ALERT 🚨",
                 "username": "RelayBot"
             })
 
