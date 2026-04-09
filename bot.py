@@ -83,13 +83,13 @@ async def on_message(message):
         # --- KEYWORD LOGIC ---
         has_3ds = "yeezy" in text
         has_evan = "evan" in text
-        has_jaden = "jaden" in text
+        has_jaden = "test" in text
 
         # --- ROUTING ---
         if has_3ds and has_evan:
             print("Matched EVAN alert")
             requests.post(WEBHOOK_B, json={
-                "content": "@JadenDH 🚨 3DS ALERT 🚨",
+                "content": "@GMTL 🚨 3DS ALERT 🚨",
                 "username": "RelayBot"
             })
 
