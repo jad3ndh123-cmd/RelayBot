@@ -2,6 +2,7 @@ import discord
 import os
 import time
 import requests
+import re
 from twilio.rest import Client
 
 # --- ENV VARIABLES ---
@@ -25,6 +26,7 @@ TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
 WEBHOOK_A = os.getenv("WEBHOOK_A")
 WEBHOOK_B = os.getenv("WEBHOOK_B")
 DEBUG_WEBHOOK = os.getenv("DEBUG_WEBHOOK")
+WEBHOOK_CHECKOUT = os.getenv("WEBHOOK_CHECKOUT")
 
 # --- TWILIO SETUP ---
 twilio_client = Client(TWILIO_SID, TWILIO_TOKEN)
@@ -86,6 +88,21 @@ async def on_message(message):
             requests.post(DEBUG_WEBHOOK, json={
                 "content": text,
                 "username": "RelayBot Debug"
+            })
+
+        # --- EXTRACT AMAZON DATA ---
+asin_match = re.search(r"asin\s+([a-z0-9]{10})", text)
+offer_match = re.search(r"offer(?:ing)?\s*id\s+([a-z0-9%]+)", text)
+
+asin = asin_match.group(1) if asin_match else None
+offer_id = offer_match.group(1) if offer_match else None
+
+if asin and offer_id and WEBHOOK_CHECKOUT:
+    buy_now_url = f"https://www.amazon.co.uk/checkout/entry/buynow?asin={asin}&offeringID={offer_id}&pipelineType=Chewbacca&quantity=1&buyNow"
+
+    requests.post(WEBHOOK_CHECKOUT, json={
+        "content": f"🚀 CHECKOUT LINK READY <@409121609333604355> <@409826137645252609>  🚀\n{buy_now_url}",
+        "username": "RelayBot Checkout"
             })
 
         # --- KEYWORD LOGIC ---
