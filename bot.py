@@ -62,11 +62,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+
     # --- PARSE WEBHOOK EMBEDS ---
     if message.channel.id in SOURCE_CHANNELS:
         text = ""
 
-        # grab embeds if present
         if message.embeds:
             for embed in message.embeds:
                 if embed.title:
@@ -83,7 +83,7 @@ async def on_message(message):
         if not text:
             return
 
-        # --- DEBUG OUTPUT (raw feed) ---
+        # --- DEBUG OUTPUT ---
         if DEBUG_WEBHOOK:
             requests.post(DEBUG_WEBHOOK, json={
                 "content": text,
@@ -91,38 +91,41 @@ async def on_message(message):
             })
 
         # --- EXTRACT AMAZON DATA ---
-asin_match = re.search(r"asin\s+([a-z0-9]{10})", text)
-offer_match = re.search(r"offer(?:ing)?\s*id\s+([a-z0-9%]+)", text)
+        asin_match = re.search(r"asin\s+([a-z0-9]{10})", text)
+        offer_match = re.search(r"offer(?:ing)?\s*id\s+([a-z0-9%]+)", text)
 
-asin = asin_match.group(1) if asin_match else None
-offer_id = offer_match.group(1) if offer_match else None
+        asin = asin_match.group(1) if asin_match else None
+        offer_id = offer_match.group(1) if offer_match else None
 
-if asin and offer_id and WEBHOOK_CHECKOUT:
-    buy_now_url = f"https://www.amazon.co.uk/checkout/entry/buynow?asin={asin}&offeringID={offer_id}&pipelineType=Chewbacca&quantity=1&buyNow"
+        if asin and offer_id and WEBHOOK_CHECKOUT:
+            buy_now_url = f"https://www.amazon.co.uk/checkout/entry/buynow?asin={asin}&offeringID={offer_id}&pipelineType=Chewbacca&quantity=1&buyNow"
 
-    requests.post(WEBHOOK_CHECKOUT, json={
-        "content": f"🚀 CHECKOUT LINK READY <@409121609333604355> <@409826137645252609>  🚀\n{buy_now_url}",
-        "username": "RelayBot Checkout"
+            requests.post(WEBHOOK_CHECKOUT, json={
+                "content": f"🚀 CHECKOUT LINK READY 🚀 <@409121609333604355> <@409826137645252609>\n{buy_now_url}",
+                "username": "RelayBot Checkout",
+                "allowed_mentions": {
+                    "users": ["409121609333604355", "409826137645252609"]
+                }
             })
 
         # --- KEYWORD LOGIC ---
-    has_3ds = "3ds" in text
-    has_evan = "evan" in text
-    has_jaden = "jaden" in text
+        has_3ds = "3ds" in text
+        has_evan = "evan" in text
+        has_jaden = "jaden" in text
 
         # --- ROUTING ---
-    if has_3ds and has_evan:
-        print("Matched EVAN alert")
-        requests.post(WEBHOOK_B, json={
-            "content": "<@409121609333604355> 🚨 3DS ALERT 🚨",
-            "username": "RelayBot"
+        if has_3ds and has_evan:
+            print("Matched EVAN alert")
+            requests.post(WEBHOOK_B, json={
+                "content": "<@409121609333604355> 🚨 3DS ALERT 🚨",
+                "username": "RelayBot"
             })
 
-    if has_3ds and has_jaden:
-        print("Matched JADEN alert")
-        requests.post(WEBHOOK_A, json={
-            "content": "<@409826137645252609> 🚨 3DS ALERT 🚨",
-            "username": "RelayBot"
+        if has_3ds and has_jaden:
+            print("Matched JADEN alert")
+            requests.post(WEBHOOK_A, json={
+                "content": "<@409826137645252609> 🚨 3DS ALERT 🚨",
+                "username": "RelayBot"
             })
 
     # --- CALL LOGIC (UNCHANGED) ---
