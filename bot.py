@@ -94,7 +94,7 @@ async def on_message(message):
         asin_match = re.search(r"asin\s*([a-z0-9]{10})", text)
 
         # find the LONG encoded string after "offer id"
-        offer_match = re.search(r"offer\s*id\s*[\r\n\s]+([a-z0-9%]+)", text)
+        offer_match = re.search(r"offer\s*id\s*[\r\n\s`]+([a-z0-9%]+)", text)
 
         asin = asin_match.group(1) if asin_match else None
         offer_id = offer_match.group(1) if offer_match else None
