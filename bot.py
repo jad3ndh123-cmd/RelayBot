@@ -106,23 +106,23 @@ if asin and offer_id and WEBHOOK_CHECKOUT:
             })
 
         # --- KEYWORD LOGIC ---
-        has_3ds = "3ds" in text
-        has_evan = "evan" in text
-        has_jaden = "jaden" in text
+    has_3ds = "3ds" in text
+    has_evan = "evan" in text
+    has_jaden = "jaden" in text
 
         # --- ROUTING ---
-        if has_3ds and has_evan:
-            print("Matched EVAN alert")
-            requests.post(WEBHOOK_B, json={
-                "content": "<@409121609333604355> 🚨 3DS ALERT 🚨",
-                "username": "RelayBot"
+    if has_3ds and has_evan:
+        print("Matched EVAN alert")
+        requests.post(WEBHOOK_B, json={
+            "content": "<@409121609333604355> 🚨 3DS ALERT 🚨",
+            "username": "RelayBot"
             })
 
-        if has_3ds and has_jaden:
-            print("Matched JADEN alert")
-            requests.post(WEBHOOK_A, json={
-                "content": "<@409826137645252609> 🚨 3DS ALERT 🚨",
-                "username": "RelayBot"
+    if has_3ds and has_jaden:
+        print("Matched JADEN alert")
+        requests.post(WEBHOOK_A, json={
+            "content": "<@409826137645252609> 🚨 3DS ALERT 🚨",
+            "username": "RelayBot"
             })
 
     # --- CALL LOGIC (UNCHANGED) ---
