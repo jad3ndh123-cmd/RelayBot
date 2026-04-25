@@ -78,7 +78,9 @@ async def on_message(message):
         else:
             text = message.content
 
-        text = text.lower().strip()
+        text = text.strip()
+        text_ci = text.lower()
+        
 
         if not text:
             return
@@ -111,9 +113,9 @@ async def on_message(message):
             })
 
         # --- KEYWORD LOGIC ---
-        has_3ds = "3ds" in text
-        has_evan = "evan" in text
-        has_jaden = "jaden" in text
+        has_3ds = "3ds" in text_ci
+        has_evan = "evan" in text_ci
+        has_jaden = "jaden" in text_ci
 
         # --- ROUTING ---
         if has_3ds and has_evan:
